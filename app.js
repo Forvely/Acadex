@@ -46,16 +46,34 @@ document.addEventListener("DOMContentLoaded", function () {
   observer.observe(svg, { attributes: true, attributeFilter: ["viewBox"] });
   updateHover();
   
-  // Zoom
+  // Animate viewBox transition
+  function animateViewBoxChange(fromBox, toBox, duration = 300) {
+    const fromValues = fromBox.split(" ").map(parseFloat);
+    const toValues = toBox.split(" ").map(parseFloat);
+    const startTime = performance.now();
+
+    function animate(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const currentValues = fromValues.map((from, i) => from + (toValues[i] - from) * progress);
+      svg.setAttribute("viewBox", currentValues.join(" "));
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  // Zoom with smooth animation
   document.addEventListener("click", function (event) {
+    let targetBox = defViewBox; // default
     if (event.target.classList.contains("EU")) {
-      svg.setAttribute("viewBox", `275 20 80 80`);
+      targetBox = "275 20 80 80";
       console.log("EU was clicked");
     } else if (event.target.classList.contains("NA")) {
-      svg.setAttribute("viewBox", `0 0 140 145`);
+      targetBox = "0 0 140 145";
       console.log("NA was clicked");
-    } else {
-      svg.setAttribute("viewBox", defViewBox);
     }
+    const currentBox = svg.getAttribute("viewBox");
+    animateViewBoxChange(currentBox, targetBox, 300);
   });
 });
