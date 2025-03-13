@@ -1,29 +1,32 @@
-const defViewBox =
-  "0.34389990089197225 0.34389990089197225 701 299.98145193260655";
+const defViewBox = "0.34389990089197225 0.34389990089197225 701 299.98145193260655";
 
 document.addEventListener("DOMContentLoaded", function () {
   let svg = document.getElementById("world-map");
   function updateHover() {
     const euCountries = document.querySelectorAll(".EU");
 
+    // Remove old event listeners by cloning the elements
     euCountries.forEach((el) => {
       let newEl = el.cloneNode(true);
       el.replaceWith(newEl);
     });
 
     const newEuCountries = document.querySelectorAll(".EU");
-
+    // Change change country colours to same on hover when in world view
     if (svg.getAttribute("viewBox") === defViewBox) {
       newEuCountries.forEach((country) => {
         country.addEventListener("mouseover", () => {
-          newEuCountries.forEach((el) => (el.style.fill = "#c99aff")); // Change all to blue
+          newEuCountries.forEach((el) => (el.style.fill = "#c99aff"));
         });
 
         country.addEventListener("mouseout", () => {
-          newEuCountries.forEach((el) => (el.style.fill = "")); // Reset all
+          newEuCountries.forEach((el) => (el.style.fill = ""));
         });
       });
-    } else {
+    }
+    // Only hovered country changes colour 
+    else {
+      // Change all the country colours to violet (since it wouldn't work without this)
       newEuCountries.forEach((el) => (el.style.fill = "violet"));
 
       newEuCountries.forEach((el) => {
@@ -36,13 +39,14 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   }
-
+  // Observe if viewbox changes
   const observer = new MutationObserver(() => {
     updateHover();
   });
   observer.observe(svg, { attributes: true, attributeFilter: ["viewBox"] });
-
   updateHover();
+  
+  // Zoom
   document.addEventListener("click", function (event) {
     if (event.target.classList.contains("EU")) {
       svg.setAttribute("viewBox", `275 20 80 80`);
