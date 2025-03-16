@@ -1,26 +1,25 @@
-const defViewBox = "0.34389990089197225 0.34389990089197225 701 299.98145193260655";
-const euViewBox = "275 20 80 80"
-const naViewBox = "0 0 140 145"
-
-
+const defViewBox = "0 0 2000 800";
+const euViewBox = "800 55 230 230"
+const naViewBox = "100 0 350 350"
 
 document.addEventListener("DOMContentLoaded", function () {
-  const france = document.getElementById("FR"); // Example for France
-  const bbox = france.getBBox();
-  
-  console.log(`France X: ${bbox.x}, Y: ${bbox.y}`);
-  console.log(`Width: ${bbox.width}, Height: ${bbox.height}`);
   let svg = document.getElementById("world-map");
   function updateHover() {
     const euCountries = document.querySelectorAll(".EU");
+    const naCountries = document.querySelectorAll(".NA");
     
     // Remove old event listeners by cloning the elements
     euCountries.forEach((el) => {
       let newEl = el.cloneNode(true);
       el.replaceWith(newEl);
     });
+    naCountries.forEach((el) => {
+      let newEl = el.cloneNode(true);
+      el.replaceWith(newEl);
+    });
     
     const newEuCountries = document.querySelectorAll(".EU");
+    const newNaCountries = document.querySelectorAll(".NA");
     // Change change country colours to same on hover when in world view
     if (svg.getAttribute("viewBox") === defViewBox) {
       console.log("if")
@@ -28,19 +27,39 @@ document.addEventListener("DOMContentLoaded", function () {
         country.addEventListener("mouseover", () => {
           newEuCountries.forEach((el) => (el.style.fill = "#c99aff"));
         });
-        
         country.addEventListener("mouseout", () => {
           newEuCountries.forEach((el) => (el.style.fill = ""));
+        });
+      });
+      newNaCountries.forEach((country) => {
+        country.addEventListener("mouseover", () => {
+          newNaCountries.forEach((el) => (el.style.fill = "#c99aff"));
+        });
+        country.addEventListener("mouseout", () => {
+          newNaCountries.forEach((el) => (el.style.fill = ""));
         });
       });
     }
     // Only hovered country changes colour 
     else if (svg.getAttribute("viewBox") == euViewBox){
-      console.log("else")
+      console.log("EU")
       // Change all the country colours to violet (since it wouldn't work without this)
       newEuCountries.forEach((el) => (el.style.fill = "violet"));
       
       newEuCountries.forEach((el) => {
+        el.addEventListener("mouseover", () => {
+          el.style.fill = "#c99aff";
+        });
+        el.addEventListener("mouseout", () => {
+          el.style.fill = "";
+        });
+      });
+    }
+    // Doing the same with the NA
+    else if (svg.getAttribute("viewBox") == naViewBox){
+      newNaCountries.forEach((el) => (el.style.fill = "violet"));
+      console.log("NA")
+      newNaCountries.forEach((el) => {
         el.addEventListener("mouseover", () => {
           el.style.fill = "#c99aff";
         });
@@ -87,7 +106,5 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentBox = svg.getAttribute("viewBox");
     animateViewBoxChange(currentBox, targetBox, 300);
   });
-  const padding = 10;
-  const FRviewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`;
-  svg.setAttribute("viewBox", FRviewBox);
+  
 });
