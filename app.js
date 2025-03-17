@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const newNaCountries = document.querySelectorAll(".NA");
     // Change change country colours to same on hover when in world view
     if (svg.getAttribute("viewBox") === defViewBox) {
-      console.log("if")
+      console.log("WORLD")
       newEuCountries.forEach((country) => {
         country.addEventListener("mouseover", () => {
           newEuCountries.forEach((el) => (el.style.fill = "#c99aff"));
@@ -98,13 +98,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // Zoom
   document.addEventListener("click", function (event) {
     let targetBox = defViewBox;
+    const currentBox = svg.getAttribute("viewBox");
     if (event.target.classList.contains("EU")) {
       targetBox = euViewBox;
     } else if (event.target.classList.contains("NA")) {
       targetBox = naViewBox;  
     }
-    const currentBox = svg.getAttribute("viewBox");
-    animateViewBoxChange(currentBox, targetBox, 300);
+    if (currentBox !== targetBox) {
+      animateViewBoxChange(currentBox, targetBox, 300);
+    }
   });
   
+  
+  function zoomToCountry(countryId) {
+    const country = document.getElementById(countryId);
+    const bbox = country.getBBox();
+    
+    // Add some padding
+    const padding = 10;
+    const viewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`;
+    
+    svg.setAttribute("viewBox", viewBox);
+  }
+  document.addEventListener("click", function (event) {
+    if (svg.getAttribute("viewBox") === euViewBox && event.target.classList.contains("EU")) {
+      zoomToCountry(event.target.id)
+    } else if (svg.getAttribute("viewBox") === naViewBox && event.target.classList.contains("NA")){
+      zoomToCountry(event.target.id)
+    }
+  });
 });
