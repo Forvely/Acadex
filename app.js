@@ -3,7 +3,9 @@ const euViewBox = "800 55 230 230"
 const naViewBox = "100 0 350 350"
 
 document.addEventListener("DOMContentLoaded", function () {
-  let svg = document.getElementById("world-map");
+  let newEuCountries = [];
+  let newNaCountries = [];
+  const svg = document.getElementById("world-map");
   function updateHover() {
     const euCountries = document.querySelectorAll(".EU");
     const naCountries = document.querySelectorAll(".NA");
@@ -18,8 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
       el.replaceWith(newEl);
     });
     
-    const newEuCountries = document.querySelectorAll(".EU");
-    const newNaCountries = document.querySelectorAll(".NA");
+    newEuCountries = document.querySelectorAll(".EU");
+    newNaCountries = document.querySelectorAll(".NA");
     // Change change country colours to same on hover when in world view
     if (svg.getAttribute("viewBox") === defViewBox) {
       console.log("WORLD")
@@ -98,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Zoom
   document.addEventListener("click", function (event) {
     let targetBox = defViewBox;
-    const currentBox = svg.getAttribute("viewBox");
+    let currentBox = svg.getAttribute("viewBox");
     if (event.target.classList.contains("EU")) {
       targetBox = euViewBox;
     } else if (event.target.classList.contains("NA")) {
@@ -106,25 +108,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (currentBox !== targetBox) {
       animateViewBoxChange(currentBox, targetBox, 300);
+      newEuCountries.forEach((el) => (el.style.fill = "violet")); // fixed hover colour staying
+      newNaCountries.forEach((el) => (el.style.fill = "violet"));
     }
   });
   
-  
+  let countryViewBox = ""
   function zoomToCountry(countryId) {
     const country = document.getElementById(countryId);
-    const bbox = country.getBBox();
+    const bbox = country.getBBox(); // dimensions of the country
     
     // Add some padding
     const padding = 10;
-    const viewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`;
+    countryViewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`;
     
-    svg.setAttribute("viewBox", viewBox);
+    svg.setAttribute("viewBox", countryViewBox);
   }
+  // Zooming into individual countries
   document.addEventListener("click", function (event) {
     if (svg.getAttribute("viewBox") === euViewBox && event.target.classList.contains("EU")) {
-      zoomToCountry(event.target.id)
+      currentBox = euViewBox;
+      zoomToCountry(event.target.id);
+      animateViewBoxChange(currentBox, countryViewBox, 300);
     } else if (svg.getAttribute("viewBox") === naViewBox && event.target.classList.contains("NA")){
-      zoomToCountry(event.target.id)
+      currentBox = naViewBox;
+      zoomToCountry(event.target.id);
+      animateViewBoxChange(currentBox, countryViewBox, 300);
     }
   });
 });
