@@ -16,8 +16,8 @@ svg {
 }
 
 #world-map {
-  width: 100%;  /* Make the SVG responsive */
-  height: auto; /* Keep aspect ratio */
+  width: 100%;
+  height: auto;
   transition: transform 0.5s ease-in-out;
   
 }
